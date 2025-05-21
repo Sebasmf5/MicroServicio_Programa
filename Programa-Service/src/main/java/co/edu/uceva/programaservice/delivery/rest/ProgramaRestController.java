@@ -2,7 +2,10 @@ package co.edu.uceva.programaservice.delivery.rest;
 
 
 import co.edu.uceva.programaservice.domain.exception.*;
+import co.edu.uceva.programaservice.domain.model.FacultadDTO;
+import co.edu.uceva.programaservice.domain.service.FacultadCliente;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +26,10 @@ import co.edu.uceva.programaservice.domain.service.IProgramaService;
 public class ProgramaRestController {
     // Declaramos como final el servicio para mejorar la inmutabilidad
     private final IProgramaService programaService;
+
+    @Autowired
+    private FacultadCliente facultadClient;
+
 
     // Constantes para los mensajes de respuesta
     private static final String MENSAJE = "mensaje";
@@ -48,6 +55,12 @@ public class ProgramaRestController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/facultades")
+    public ResponseEntity<Map<String, Object>> getFacultades() {
+        ResponseEntity<Map<String, Object>> programas = facultadClient.getFacultades();
+        return programas;
+    }
+
     /**
      * Listar programas con paginación.
      */
@@ -65,16 +78,18 @@ public class ProgramaRestController {
      * Crear un nuevo programa pasando el objeto en el cuerpo de la petición, usando validaciones
      */
     @PostMapping("/programas")
-    public ResponseEntity<Map<String, Object>> save(@Valid @RequestBody Programa programa, BindingResult result) {
+    public ResponseEntity<Map<String, Object>> save(@Valid @RequestBody Programa programa, BindingResult result, @PathVariable Integer id) {
         if (result.hasErrors()) {
             throw new ValidationException(result);
         }
-        Map<String, Object> response = new HashMap<>();
-        Programa nuevoPrograma = programaService.save(programa);
-        response.put(MENSAJE, "El programa ha sido creado con éxito!");
-        response.put(PROGRAMA, nuevoPrograma);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+            Map<String, Object> response = new HashMap<>();
+            Programa nuevoPrograma = programaService.save(programa);
+            response.put(MENSAJE, "El programa ha sido creado con éxito!");
+            response.put(PROGRAMA, nuevoPrograma);
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
+
+
 
 
     /**

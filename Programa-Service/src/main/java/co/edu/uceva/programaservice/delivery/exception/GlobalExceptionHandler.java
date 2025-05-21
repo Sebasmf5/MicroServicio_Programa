@@ -43,6 +43,14 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.OK).body(response); // 200 pero lista vacía
     }
 
+    @ExceptionHandler(NoExisteFacultad.class)
+    public ResponseEntity<Map<String, Object>> handleNoHayProductos(NoExisteFacultad ex) {
+        Map<String, Object> response = new HashMap<>();
+        response.put(MENSAJE, ex.getMessage());
+        response.put(PROGRAMA, null); // para que sea siempre el mismo campo
+        return ResponseEntity.status(HttpStatus.OK).body(response); // 200 pero lista vacía
+    }
+
     @ExceptionHandler(ProgramaNoEncontradoException.class)
     public ResponseEntity<Map<String, Object>> handleProductoNoEncontrado(ProgramaNoEncontradoException ex) {
         Map<String, Object> response = new HashMap<>();
